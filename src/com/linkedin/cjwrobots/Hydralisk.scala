@@ -2,13 +2,13 @@ package com.linkedin.cjwrobots
 
 import robocode.robotinterfaces.peer.IBasicRobotPeer
 import java.io.PrintStream
-import robocode.Robot
 import robocode.ScannedRobotEvent
+import robocode.TeamRobot
 
 /**
- * Basically a drone for the OverMind, but I like Pirates
+ * Basically a drone for the OverMind.
  */
-class PirateBot extends Robot {
+class Hydralisk extends TeamRobot {
 
   var shouldFireNext = false
   var foundRobot = false
