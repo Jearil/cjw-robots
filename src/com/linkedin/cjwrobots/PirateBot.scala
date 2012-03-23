@@ -1,4 +1,4 @@
-package com.linkedin.robots
+package com.linkedin.cjwrobots
 
 import robocode.robotinterfaces.peer.IBasicRobotPeer
 import java.io.PrintStream
