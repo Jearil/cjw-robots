@@ -1,4 +1,4 @@
-package pez.rumble;
+package com.linkedin.cjwrobot;
 //CassiusClayM - by PEZ - Float like a butterfly.
 //A non-firing version of CassiusClay - http://robowiki.net/?CassiusClay
 

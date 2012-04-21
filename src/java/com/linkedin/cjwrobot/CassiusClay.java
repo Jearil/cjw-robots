@@ -1,9 +1,9 @@
-package pez.rumble;
+package com.linkedin.cjwrobot;
 
 import java.awt.Color;
 
-import pez.rumble.pgun.Bee;
-import pez.rumble.pmove.Butterfly;
+import com.linkedin.cjwrobot.pgun.Bee;
+import com.linkedin.cjwrobot.pmove.Butterfly;
 
 //CassiusClay - by PEZ - Float like a butterfly. Sting like a bee.
 //http://robowiki.net/?CassiusClay

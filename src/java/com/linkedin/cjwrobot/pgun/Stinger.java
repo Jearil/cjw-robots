@@ -1,6 +1,7 @@
-package pez.rumble.pgun;
-import pez.rumble.RumbleBot;
-import pez.rumble.utils.*;
+package com.linkedin.cjwrobot.pgun;
+
+import com.linkedin.cjwrobot.RumbleBot;
+import com.linkedin.cjwrobot.utils.*;
 import robocode.*;
 
 import java.awt.geom.*;

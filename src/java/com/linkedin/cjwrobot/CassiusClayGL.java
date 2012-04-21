@@ -1,4 +1,4 @@
-package pez.rumble;
+package com.linkedin.cjwrobot;
 //CassiusClayGL - by PEZ - Float like a butterfly. Sting like a bee.
 //A RobocodeGL version CassiusClay - http://robowiki.net/?CassiusClay/GL
 

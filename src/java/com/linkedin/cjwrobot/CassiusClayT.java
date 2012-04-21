@@ -1,4 +1,4 @@
-package pez.rumble;
+package com.linkedin.cjwrobot;
 // CassiusClayT - by PEZ - Sting like a bee.
 // A stationary version of CassiusClay - http://robowiki.net/?CassiusClay
 // 

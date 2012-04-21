@@ -1,4 +1,4 @@
-package pez.rumble.utils;
+package com.linkedin.cjwrobot.utils;
 
 // MovementVector, utility class for use with RobotPredictor. By PEZ.
 // http://robowiki.net/?PEZ

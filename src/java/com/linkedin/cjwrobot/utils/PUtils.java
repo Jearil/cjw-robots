@@ -1,4 +1,4 @@
-package pez.rumble.utils;
+package com.linkedin.cjwrobot.utils;
 import robocode.*;
 import java.awt.geom.*;
 

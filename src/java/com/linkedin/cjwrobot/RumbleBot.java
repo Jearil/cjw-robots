@@ -1,7 +1,8 @@
-package pez.rumble;
-import pez.rumble.pgun.*;
-import pez.rumble.pmove.*;
-import pez.rumble.utils.*;
+package com.linkedin.cjwrobot;
+
+import com.linkedin.cjwrobot.pgun.*;
+import com.linkedin.cjwrobot.pmove.*;
+import com.linkedin.cjwrobot.utils.*;
 import robocode.*;
 import robocode.util.Utils;
 

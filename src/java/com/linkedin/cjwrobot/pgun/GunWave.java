@@ -1,6 +1,6 @@
-package pez.rumble.pgun;
+package com.linkedin.cjwrobot.pgun;
 
-import pez.rumble.utils.Wave;
+import com.linkedin.cjwrobot.utils.Wave;
 
 public class GunWave extends Wave {
 	boolean hit(double diff) {
