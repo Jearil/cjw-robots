@@ -1,0 +1,9 @@
+#Battle Properties
+robocode.battleField.width=1000
+robocode.battleField.height=1000
+robocode.battle.numRounds=1
+robocode.battle.gunCoolingRate=0.2
+robocode.battle.rules.inactivityTime=450
+robocode.battle.hideEnemyNames=false
+robocode.battle.selectedRobots=sampleteam.MyFirstTeam,sampleteam.MyFirstTeam
+#robocode.battle.initialPositions=(80,80,45),(180,80,45),(80,180,45),(920,920,225),(820,920,225),(920,820,225)
