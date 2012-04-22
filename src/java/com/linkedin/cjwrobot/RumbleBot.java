@@ -15,10 +15,7 @@ import robocode.util.Utils;
 
 //$Id$
 
-public abstract class RumbleBot extends AdvancedRobot {
-	boolean isTC = false; // http://robowiki.net/?TargetingChallenge
-	boolean isMC = false; // http://robowiki.net/?MovementChallenge
-	boolean doGL = false; // http://robowiki.net/?CassiusClay/GL
+public abstract class RumbleBot extends TeamRobot {
 
 	static double wins;
 	static int skipped;
@@ -33,9 +30,6 @@ public abstract class RumbleBot extends AdvancedRobot {
 
 
 	public void run() {
-		Stinger.isTC = isTC;
-		Butterfly.isMC = isMC;
-		Butterfly.doGL = doGL;
 		setAdjustRadarForGunTurn(true);
 		setAdjustGunForRobotTurn(true);
 
@@ -61,10 +55,9 @@ public abstract class RumbleBot extends AdvancedRobot {
 		lastScanEvent = e;
 		timeSinceScan = 0;
 		setTurnRadarRightRadians(Utils.normalRelativeAngle(enemyAbsBearing - getRadarHeadingRadians()) * 2);
-		if (!isTC) {
-			floater.onScannedRobot(e);
-		}
-		if (!isMC) {
+	    floater.onScannedRobot(e);  // potentially dodge teammates
+        String scannedName = e.getName();
+		if (!isTeammate(scannedName)) { // Don't shoot (or track) teammates.
 			stinger.onScannedRobot(e);
 		}
 	}

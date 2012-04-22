@@ -36,6 +36,8 @@ public class Bee extends Stinger {
 	}
 
 	void scannedRobot(ScannedRobotEvent e) {
+        if (!e.getName().equals(enemyName))
+            return; // don't do anything if it's not our target
 		BeeWave wave = new BeeWave(robot);
 		Point2D robotLocation = new Point2D.Double(robot.getX(), robot.getY());
 		double bearing = robot.getHeadingRadians() + e.getBearingRadians();
@@ -129,6 +131,9 @@ public class Bee extends Stinger {
 			wave.currentGuessor().registerHit(b.getPower(), distance);
 			BeeWave.BeeReplacor.registerHit(wave);
 		}
+        if (e.getEnergy() < 0.0) {
+            enemyName = "";
+        }
 	}
 }
 
@@ -136,14 +141,14 @@ class BeeWave extends GunWave {
 	static final int BINS = 75;
 	static final int MIDDLE_BIN = (BINS - 1) / 2;
 
-	static List waves;
-	static List bullets;
+	static List<BeeWave> waves;
+	static List<BeeWave> bullets;
 
 	static BeeAccumulator BeeAccumulator;
 	static BeeReplacor BeeReplacor;
-	static List guessors;
+	static List<Guessor> guessors;
 	static Guessor currentGuessor;
-	Map guesses = new HashMap();
+	Map<Guessor, Integer> guesses = new HashMap<Guessor, Integer>();
 
 	double bulletPower;
 	double timeSinceAccel;
@@ -167,29 +172,29 @@ class BeeWave extends GunWave {
 	double weight = 1;
 
 	static void initRound() {
-		waves = new ArrayList();
-		bullets = new ArrayList();
+		waves = new ArrayList<BeeWave>();
+		bullets = new ArrayList<BeeWave>();
 		if (guessors == null) {
 			readStats();
 		}
-		for (int i = 0, n = guessors.size(); i < n; i++) {
-			((Guessor)guessors.get(i)).rounds++;
-		}
-		if (BeeAccumulator.rounds > Guessor.RATING_UPDATE_START && BeeAccumulator.rounds <= Guessor.RATING_UPDATE_STOP &&  BeeAccumulator.rounds % Guessor.RATING_UPDATE_ROUNDS == 0) {
+        for (Guessor guessor : guessors) {
+            guessor.rounds++;
+        }
+		if (BeeAccumulator.rounds > Guessor.RATING_UPDATE_START && BeeAccumulator.rounds <= Guessor.RATING_UPDATE_STOP &&  (BeeAccumulator.rounds % Guessor.RATING_UPDATE_ROUNDS == 0)) {
 			if (BeeAccumulator.vRating() > Guessor.BeeAccumulator_REWARD_TRIGGER_VRATING) {
 				BeeAccumulator.incrementRating();
 			}
 			Collections.sort(guessors, Guessor.getVirtualStatsComparator());
-			double firstVR = ((Guessor)guessors.get(0)).vRating();
-			double secondVR = ((Guessor)guessors.get(1)).vRating();
+			double firstVR = guessors.get(0).vRating();
+			double secondVR = guessors.get(1).vRating();
 			double vDiff =  firstVR - secondVR;
 			double vDiffSize = vDiff / (firstVR + secondVR);
 			if (vDiffSize > Guessor.RATING_INCREMENT_THRESHOLD) {
-				((Guessor)guessors.get(0)).incrementRating();
+				(guessors.get(0)).incrementRating();
 			}
 		}
 		Collections.sort(guessors);
-		currentGuessor = (Guessor)guessors.get(0);
+		currentGuessor = guessors.get(0);
 	}
 
 	public BeeWave(AdvancedRobot robot) {
@@ -210,36 +215,34 @@ class BeeWave extends GunWave {
 	}
 
 	static void updateWaves() {
-		List reap = new ArrayList();
-		for (int i = 0, n = waves.size(); i < n; i++) {
-			BeeWave wave = (BeeWave)waves.get(i);
-			wave.setDistanceFromGun((robot.getTime() - wave.getStartTime()) * wave.getBulletVelocity());
-			if (wave.passed(1.5 * wave.getBulletVelocity())) {
-				if (wave.getRobot().getOthers() > 0) {
-					wave.registerVisit();
-				}
-				reap.add(wave);
-				bullets.remove(wave);
-			}
-		}
-		for (int i = 0, n = reap.size(); i < n; i++) {
-			waves.remove(reap.get(i));
-		}
+		List<BeeWave> reap = new ArrayList<BeeWave>();
+        for (BeeWave wave : waves) {
+            wave.setDistanceFromGun((robot.getTime() - wave.getStartTime()) * wave.getBulletVelocity());
+            if (wave.passed(1.5 * wave.getBulletVelocity())) {
+                if (wave.getRobot().getOthers() > 0) {
+                    wave.registerVisit();
+                }
+                reap.add(wave);
+                bullets.remove(wave);
+            }
+        }
+        for (BeeWave toReap : reap) {
+            waves.remove(toReap);
+        }
 	}
 
 	void registerVisit() {
-		for (int i = 0, n = guessors.size(); i < n; i++) {
-			Guessor gun = (Guessor)guessors.get(i);
-			gun.registerVisit(this, guesses);
-		}
+        for (Object guessor : guessors) {
+            Guessor gun = (Guessor) guessor;
+            gun.registerVisit(this, guesses);
+        }
 	}
 
 	int mostVisited() {
-		for (int i = 0, n = guessors.size(); i < n; i++) {
-			Guessor gun = (Guessor)guessors.get(i);
-			gun.guess(this);
-			guesses.put(gun, new Integer(gun.guessed()));
-		}
+        for (Guessor gun : guessors) {
+            gun.guess(this);
+            guesses.put(gun, gun.guessed());
+        }
 		return currentGuessor.guessed();
 	}
 
@@ -251,13 +254,13 @@ class BeeWave extends GunWave {
 		return PUtils.maxEscapeAngle(bulletVelocity) * 1.4;
 	}
 
-	static Map readEnemies() {
-		Map enemies;
+	static Map<String, List<Guessor>> readEnemies() {
+		Map<String, List<Guessor>> enemies;
 		try {
-			enemies = (HashMap)(new ObjectInputStream(new GZIPInputStream(new FileInputStream(robot.getDataFile("vgstats.gz"))))).readObject();
+			enemies = (HashMap<String, List<Guessor>>)(new ObjectInputStream(new GZIPInputStream(new FileInputStream(robot.getDataFile("vgstats.gz"))))).readObject();
 			System.out.println("Read vgstats for " + enemies.size() + " enemies");
 		} catch (Exception e) {
-			enemies = new HashMap();
+			enemies = new HashMap<String, List<Guessor>>();
 			System.out.println("Couldn't read vgstats: " + e.getMessage());
 		}
 		return enemies;
@@ -276,8 +279,8 @@ class BeeWave extends GunWave {
 
 	static void readStats() {
 		if (!Bee.isTC) {
-			Map enemies = readEnemies();
-			guessors = (ArrayList)enemies.get(Bee.enemyName);
+			Map<String, List<Guessor>> enemies = readEnemies();
+			guessors = enemies.get(Bee.enemyName);
 		}
 		if (guessors != null) {
 			BeeAccumulator = (BeeAccumulator)guessors.get(0);
@@ -286,15 +289,15 @@ class BeeWave extends GunWave {
 		}
 		else {
 			System.out.println("No vgstats for " + Bee.enemyName + " on file yet.");
-			guessors = new ArrayList();
+			guessors = new ArrayList<Guessor>();
 			guessors.add(BeeAccumulator = new BeeAccumulator());
 			guessors.add(BeeReplacor = new BeeReplacor());
 		}
 	}
 
 	static void saveStats() {
-		Map enemies = readEnemies();
-		List orderedGuessors = new ArrayList();
+		Map<String, List<Guessor>> enemies = readEnemies();
+		List<Guessor> orderedGuessors = new ArrayList<Guessor>();
 		orderedGuessors.add(BeeAccumulator);
 		orderedGuessors.add(BeeReplacor);
 		enemies.put(Bee.enemyName, orderedGuessors);
@@ -307,10 +310,10 @@ class BeeWave extends GunWave {
 		for (int i = 0, il = data.length; i < il; i++) {
 			System.out.print(names[i] + "\t");
 			ArrayList guessors = (ArrayList)data[i];
-			for (int j = 0, jl = guessors.size(); j < jl; j++) {
-				Guessor g = (Guessor)guessors.get(j);
-				System.out.print(g.logRow() + "\t");
-			}
+            for (Object guessor : guessors) {
+                Guessor g = (Guessor) guessor;
+                System.out.print(g.logRow() + "\t");
+            }
 			Collections.sort(guessors);
 			System.out.println(((Guessor)guessors.get(0)).name());
 		}
@@ -351,10 +354,10 @@ abstract class Guessor implements Comparable, Serializable {
 	abstract double[][] buffers(BeeWave w);
 	abstract void incrementRating();
 
-	void registerVisit(BeeWave w, Map guesses) {
+	void registerVisit(BeeWave w, Map<Guessor, Integer> guesses) {
 		int index = Math.max(1, w.visitingIndex());
 		if (w.weight > 2.0) {
-			updateVRating(index, ((Integer)guesses.get(this)).intValue(), w);
+			updateVRating(index, guesses.get(this), w);
 		}
 		registerVisit(index, w);
 	}
@@ -363,22 +366,22 @@ abstract class Guessor implements Comparable, Serializable {
 		int defaultIndex = BeeWave.MIDDLE_BIN + BeeWave.MIDDLE_BIN / 4;
 		double uses = 0;
 		double[][] buffers = buffers(w);
-		for (int b = 0; b < buffers.length; b++) {
-			uses += buffers[b][0];
-		}
+        for (double[] buffer : buffers) {
+            uses += buffer[0];
+        }
 		if (uses < 1) {
 			return defaultIndex;
 		}
-		List visitRanks = new ArrayList();
+		List<VisitsIndex> visitRanks = new ArrayList<VisitsIndex>();
 		for (int i = 1; i < BeeWave.BINS; i++) {
 			double visits = 0;
-			for (int b = 0; b < buffers.length; b++) {
-				visits += uses * buffers[b][i] / Math.max(1, buffers[b][0]);
-			}
+            for (double[] buffer : buffers) {
+                visits += uses * buffer[i] / Math.max(1, buffer[0]);
+            }
 			visitRanks.add(new VisitsIndex(visits, i));
 		}
 		Collections.sort(visitRanks);
-		return ((VisitsIndex)visitRanks.get(0)).index;
+		return visitRanks.get(0).index;
 	}
 
 	void guess(BeeWave w) {
@@ -425,9 +428,9 @@ abstract class Guessor implements Comparable, Serializable {
 		return new VirtualStatsComparator();
 	}
 
-	static class VirtualStatsComparator implements Comparator {
-		public int compare(Object a, Object b) {
-			return (int)((((Guessor)b).vRating() - ((Guessor)a).vRating()) * 100);
+	static class VirtualStatsComparator implements Comparator<Guessor> {
+		public int compare(Guessor a, Guessor b) {
+			return (int)(((b).vRating() - (a).vRating()) * 100);
 		}
 	}
 
