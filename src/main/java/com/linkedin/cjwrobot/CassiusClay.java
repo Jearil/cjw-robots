@@ -16,9 +16,6 @@ import com.linkedin.cjwrobot.pmove.Butterfly;
 
 public class CassiusClay extends RumbleBot {
 	public void run() {
-		CassiusClayT.dummy(); // Tricking the Robocode packager to package the T (targeting-only) version
-		CassiusClayM.dummy(); // Tricking the Robocode packager to package the M (movement-only) version
-		CassiusClayGL.dummy(); // Tricking the Robocode packager to package the RobocodeGL version
 		floater = new Butterfly(this);
 		stinger = new Bee(this, robotPredictor);
 		setColors(new Color(60, 30, 10), Color.green, Color.black);
