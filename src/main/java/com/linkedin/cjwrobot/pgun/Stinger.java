@@ -47,19 +47,20 @@ public abstract class Stinger {
 	
 	public void onScannedRobot(ScannedRobotEvent e) {
 		distance = e.getDistance();
-		if (enemyName == "") {
+		if (enemyName.equals("")) {
 			enemyName = e.getName();
-		}
-		if (lastScanTime == 0) {
-			initRound();
-			System.out.println("range hits given: " + (int)rangeHits + " (average / round: " + java.text.NumberFormat.getNumberInstance().format(hitRate()) + ")");
-			roundNum++;
-		}
+		} else if (e.getName().equals(enemyName)) { // ignore things other than our current target
+            if (lastScanTime == 0) {
+                initRound();
+                System.out.println("range hits given: " + (int)rangeHits + " (average / round: " + java.text.NumberFormat.getNumberInstance().format(hitRate()) + ")");
+                roundNum++;
+            }
 
-		if (robot.getTime() > lastScanTime) {
-			scannedRobot(e);
-		}
-		lastScanTime = robot.getTime();
+            if (robot.getTime() > lastScanTime) {
+                scannedRobot(e);
+            }
+            lastScanTime = robot.getTime();
+        }
 	}
 
 	double bulletPower(double distance, double eEnergy, double rEnergy) {

@@ -4,9 +4,6 @@ import com.linkedin.cjwrobot.RumbleBot;
 import robocode.*;
 import java.util.*;
 import java.awt.geom.*;
-import java.awt.Color; // GL
-import robocode.robocodeGL.*; // GL
-import robocode.robocodeGL.system.*; // GL
 
 //Butterfly, a movement by PEZ. For CassiusClay - Float like a butterfly!
 //http://robowiki.net/?CassiusClay
@@ -66,9 +63,6 @@ public class Butterfly {
 		roundsLeft = robot.getNumRounds() - roundNum - 1;
 		roundNum++;
 		bulletsThisRound = 0;
-		if (doGL) { // GL
-			WaveGrapher.initDangerGraph(); // GL
-		} // GL
 	}
 
 	public void onScannedRobot(ScannedRobotEvent e) {
@@ -94,9 +88,6 @@ public class Butterfly {
 			MovementWave.bullets.add(wave);
 			MovementWave.surfables.add(wave);
 			bulletsThisRound++;
-			if (doGL) { // GL
-				wave.grapher = new WaveGrapher(wave); // GL
-			} // GL
 		}
 		enemyEnergy = e.getEnergy();
 		double bulletVelocity = PUtils.bulletVelocity(enemyFirePower);
@@ -218,9 +209,6 @@ public class Butterfly {
 		robot.setAhead(PUtils.backAsFrontDirection(newHeading, oldHeading) * 50);
 		robot.setTurnRightRadians(PUtils.backAsFrontTurn(newHeading, oldHeading));
 		robot.setMaxVelocity(wantedVelocity);
-		if (doGL) { // GL
-			WaveGrapher.drawDangerGraph(MovementWave.dangerForward, MovementWave.dangerStop, MovementWave.dangerReverse); // GL
-		} // GL
 	}
 
 	static Move wallSmoothedDestination(Point2D location, Point2D orbitCenter, double direction) {
@@ -262,19 +250,10 @@ public class Butterfly {
 	void updateDirectionStats(List _waves, MovementWave closest) {
 		Move move = waveImpactLocation(closest, 1.0, MAX_VELOCITY);
 		MovementWave.dangerForward += impactDanger(_waves, move.location);
-		if (closest.grapher != null) { // GL
-			closest.grapher.drawForwardDestination(move.location, closest.danger(move.location)); // GL
-		} // GL
 		move = waveImpactLocation(closest, -1.0, MAX_VELOCITY);
 		MovementWave.dangerReverse += impactDanger(_waves, move.location);
-		if (closest.grapher != null) { // GL
-			closest.grapher.drawReverseDestination(move.location, closest.danger(move.location)); // GL
-		} // GL
 		move = waveImpactLocation(closest, 1.0, 0);
 		MovementWave.dangerStop += impactDanger(_waves, move.location);
-		if (closest.grapher != null) { // GL
-			closest.grapher.drawStopDestination(move.location, closest.danger(move.location)); // GL
-		} // GL
 	}
 
 	double impactDanger(List _waves, Point2D impact) {
@@ -382,8 +361,6 @@ class MovementWave extends Wave {
 	int approachIndex;
 	boolean visitRegistered;
 
-	WaveGrapher grapher; // GL
-
 	static void initStatBuffers() {
 		visitCounts = new float[DISTANCE_INDEXES][VELOCITY_INDEXES][ACCEL_INDEXES][TIMER_INDEXES][WALL_INDEXES][FACTORS];
 		visitCountsTimerWalls = new float[DISTANCE_INDEXES][VELOCITY_INDEXES][TIMER_INDEXES][WALL_INDEXES][FACTORS];
@@ -442,17 +419,11 @@ class MovementWave extends Wave {
 			}
 			if (wave.passed(wave.getBulletVelocity() * 2)) {
 				surfables.remove(wave);
-				if (wave.grapher != null) { // GL
-					wave.grapher.remove(); // GL
-				} // GL
 			}
 			if (wave.passed(-15)) {
 				reap.add(wave);
 				bullets.remove(wave);
 			}
-			if (wave.grapher != null) { // GL
-				wave.grapher.drawWave(); // GL
-			} // GL
 		}
 		for (int i = 0, n = reap.size(); i < n; i++) {
 			waves.remove(reap.get(i));
@@ -623,7 +594,7 @@ class Hit {
 	int robotY;
 	int enemyX;
 	int enemyY;
-	double gf = -100;;
+	double gf = -100;
 
 	Hit(double bulletPower, double distance, Point2D robotLocation, Point2D enemyLocation) {
 		this.bulletPower = (double)((int)(bulletPower * 100) / 100.0);
@@ -645,112 +616,3 @@ class Hit {
 		}
 	}
 }
-
-//GL
-class WaveGrapher{
-	static GLRenderer renderer = GLRenderer.getInstance();
-	static int counter = 0;
-
-	String id;
-	MovementWave wave;
-	PointGL[] dots;
-	PointGL forwardDestination = new PointGL();
-	PointGL reverseDestination = new PointGL();
-	PointGL stopDestination = new PointGL();
-	LabelGL forwardLabel = new LabelGL("");
-	LabelGL reverseLabel = new LabelGL("");
-	LabelGL stopLabel = new LabelGL("");
-
-	WaveGrapher(MovementWave wave) {
-		this.id = "" + counter++;
-		this.wave = wave;
-		this.dots = new PointGL[MovementWave.FACTORS];
-		for (int i = 0; i < dots.length; i++) {
-			dots[i] = new PointGL();
-			if (i == MovementWave.MIDDLE_FACTOR) {
-				dots[i].addLabel(new LabelGL(id));
-			}
-			renderer.addRenderElement(dots[i]);
-		}
-		forwardDestination.addLabel(forwardLabel);
-		forwardDestination.setColor(Color.GREEN);
-		forwardDestination.setSize(8);
-		forwardDestination.setPosition(-100, -100);
-		reverseDestination.addLabel(reverseLabel);
-		reverseDestination.setColor(Color.RED);
-		reverseDestination.setSize(8);
-		reverseDestination.setPosition(-100, -100);
-		stopDestination.addLabel(stopLabel);
-		stopDestination.setColor(Color.YELLOW);
-		stopDestination.setSize(8);
-		stopDestination.setPosition(-100, -100);
-		renderer.addRenderElement(forwardDestination);
-		renderer.addRenderElement(reverseDestination);
-		renderer.addRenderElement(stopDestination);
-	}
-
-	void drawWave() {
-		float totalDanger = 0;
-		for (int i = 0; i < dots.length; i++) {
-			totalDanger += wave.dangerUnWeighed(i);
-		}
-		for (int i = 0; i < dots.length; i++) {
-			Point2D dot = PUtils.project(wave.getGunLocation(),
-					wave.getStartBearing() + wave.getOrbitDirection() * (i - MovementWave.MIDDLE_FACTOR),
-					wave.distanceFromGun());
-			dots[i].setPosition(dot.getX(), dot.getY());
-			dots[i].setColor(Color.BLUE);
-			dots[i].setSize(150f * (float)wave.dangerUnWeighed(i) / totalDanger);
-		}
-	}
-
-	void drawDestination(PointGL destination, LabelGL label, Point2D coords, double value) {
-		destination.setPosition(coords.getX(), coords.getY());
-		label.setString(id + " : " + (int)value);
-	}
-
-	void drawForwardDestination(Point2D coords, double value) {
-		drawDestination(forwardDestination, forwardLabel, coords, value);
-	}
-
-	void drawReverseDestination(Point2D coords, double value) {
-		drawDestination(reverseDestination, reverseLabel, coords, value);
-	}
-
-	void drawStopDestination(Point2D coords, double value) {
-		drawDestination(stopDestination, stopLabel, coords, value);
-	}
-
-	void remove() {
-		for (int i = 0; i < dots.length; i++) {
-			dots[i].remove();
-		}
-		forwardDestination.remove();
-		reverseDestination.remove();
-		stopDestination.remove();
-	}
-
-	static RectangleGL forwardRect;
-	static RectangleGL stopRect;
-	static RectangleGL reverseRect;
-
-	static void drawDangerGraph(double dangerForward, double dangerStop, double dangerReverse) {
-		forwardRect.setSize(15, dangerForward);
-		stopRect.setSize(15, dangerStop);
-		reverseRect.setSize(15, dangerReverse);
-	}
-
-	static boolean initDangerGraph() {
-		forwardRect = new RectangleGL(10, 0, 15, 0, Color.GREEN, 1);
-		stopRect    = new RectangleGL(25, 0, 15, 0, Color.YELLOW, 1);
-		reverseRect = new RectangleGL(40, 0, 15, 0, Color.RED, 1);
-		forwardRect.setFilled(true);
-		stopRect.setFilled(true);
-		reverseRect.setFilled(true);
-		renderer.addRenderElement(forwardRect);
-		renderer.addRenderElement(stopRect);
-		renderer.addRenderElement(reverseRect);
-		return true;
-	}
-}
-//GL
