@@ -79,6 +79,12 @@ public abstract class RumbleBot extends TeamRobot
     {
         floater.onBulletHit(e);
         stinger.onBulletHit(e);
+        TeamUtils.notifyBulletHit(e);
+    }
+
+    public void onTeamBulletHit(BulletHitEvent e)
+    {
+        stinger.onTeamBulletHit(e);
     }
 
     public void onBulletHitBullet(BulletHitBulletEvent e) 

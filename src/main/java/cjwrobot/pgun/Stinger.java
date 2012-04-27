@@ -1,6 +1,7 @@
 package cjwrobot.pgun;
 
 import cjwrobot.RumbleBot;
+import cjwrobot.TeamUtils;
 import cjwrobot.utils.PUtils;
 import cjwrobot.utils.RobotPredictor;
 import robocode.*;
@@ -45,10 +46,12 @@ public abstract class Stinger {
 	abstract void scannedRobot(ScannedRobotEvent e);
 	abstract void initRound();
 	abstract void bulletHit(BulletHitEvent e);
+    abstract void teamBulletHit(BulletHitEvent e);
 	
 	public void onScannedRobot(ScannedRobotEvent e) {
 		distance = e.getDistance();
 		if (enemyName.equals("")) {
+            TeamUtils.log("Robot(" + robot.getName() + ") setting target to " + e.getName());
 			enemyName = e.getName();
 		} else if (e.getName().equals(enemyName)) { // ignore things other than our current target
             if (lastScanTime == 0) {
@@ -94,10 +97,15 @@ public abstract class Stinger {
 		}
 		return 0;
 	}
+
 	public void onBulletHit(BulletHitEvent e) {
 		if (distance > 150 && e.getBullet().getPower() > 1.2) {
 			rangeHits++;
 		}
 		bulletHit(e);
+	}
+
+    public void onTeamBulletHit(BulletHitEvent e) {
+		teamBulletHit(e);
 	}
 }

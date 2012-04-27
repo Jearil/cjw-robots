@@ -13,6 +13,11 @@ import cjwrobot.pmove.Butterfly;
 
 public class Hydra extends RumbleBot
 {
+    public Hydra()
+    {
+        TeamUtils.addRumbleBot(this);
+    }
+
 	public void run() {
 		floater = new Butterfly(this);
 		stinger = new Bee(this, robotPredictor);

@@ -1,5 +1,6 @@
 package cjwrobot.pgun;
 
+import cjwrobot.TeamUtils;
 import cjwrobot.utils.PUtils;
 import cjwrobot.utils.RobotPredictor;
 import cjwrobot.utils.Wave;
@@ -134,6 +135,14 @@ public class Bee extends Stinger {
 			BeeWave.BeeReplacor.registerHit(wave);
 		}
         if (e.getEnergy() < 0.0) {
+            TeamUtils.log("Robot(" + robot.getName() + ") has unset target enemy");
+            enemyName = "";
+        }
+	}
+
+    void teamBulletHit(BulletHitEvent e) {
+        if (e.getEnergy() < 0.0 && e.getName().equals(enemyName)) {
+            TeamUtils.log("Robot(" + robot.getName() + ") has unset target enemy");
             enemyName = "";
         }
 	}
