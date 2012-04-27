@@ -69,6 +69,11 @@ public abstract class RumbleBot extends TeamRobot
             stinger.onScannedRobot(e);
         }
     }
+    
+    public void setEnemy(String botName) {
+        stinger.setEnemy(botName);
+        System.out.println("Switching to: " + botName);
+    }
 
     public void onHitByBullet(HitByBulletEvent e) 
     {

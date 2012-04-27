@@ -51,9 +51,10 @@ public abstract class Stinger {
 	
 	public void onScannedRobot(ScannedRobotEvent e) {
 		distance = e.getDistance();
-		if (enemyName.equals("")) {
+		if (enemyName.equals("") && !TeamUtils.isTeamMate(e.getName())) {
             TeamUtils.log("Robot(" + robot.getName() + ") setting target to " + e.getName());
 			enemyName = e.getName();
+            TeamUtils.teamUpAgainst(enemyName);
 		} else if (e.getName().equals(enemyName)) { // ignore things other than our current target
             if (lastScanTime == 0) {
                 initRound();
@@ -113,4 +114,8 @@ public abstract class Stinger {
     public void onTeamRobotDeath(robocode.RobotDeathEvent event) {
 		teamRobotDeath(event);
 	}
+    
+    public void setEnemy(String botName) {
+        enemyName = botName;
+    }
 }

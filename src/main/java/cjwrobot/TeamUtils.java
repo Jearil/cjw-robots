@@ -34,6 +34,19 @@ public class TeamUtils
             e.printStackTrace();
         }
     }
+    
+    public static boolean isTeamMate(String botName) {
+        for(RumbleBot bot : _team) {
+            if(bot.getName().equals(botName)) return true;
+        }
+        return false;
+    }
+    
+    public static void teamUpAgainst(String botName) {
+        for(RumbleBot bot : _team) {
+            bot.setEnemy(botName);
+        }
+    }
 
     protected static void addRumbleBot(RumbleBot member)
     {
