@@ -47,6 +47,7 @@ public abstract class Stinger {
 	abstract void initRound();
 	abstract void bulletHit(BulletHitEvent e);
     abstract void teamBulletHit(BulletHitEvent e);
+    abstract void teamRobotDeath(robocode.RobotDeathEvent event);
 	
 	public void onScannedRobot(ScannedRobotEvent e) {
 		distance = e.getDistance();
@@ -107,5 +108,9 @@ public abstract class Stinger {
 
     public void onTeamBulletHit(BulletHitEvent e) {
 		teamBulletHit(e);
+	}
+
+    public void onTeamRobotDeath(robocode.RobotDeathEvent event) {
+		teamRobotDeath(event);
 	}
 }

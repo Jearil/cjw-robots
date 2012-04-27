@@ -146,6 +146,13 @@ public class Bee extends Stinger {
             enemyName = "";
         }
 	}
+
+    void teamRobotDeath(robocode.RobotDeathEvent event) {
+        if (event.getName().equals(enemyName)) {
+            TeamUtils.log("Robot(" + robot.getName() + ") has unset target enemy");
+            enemyName = "";
+        }
+    }
 }
 
 class BeeWave extends GunWave {

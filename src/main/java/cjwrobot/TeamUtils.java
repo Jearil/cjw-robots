@@ -48,6 +48,14 @@ public class TeamUtils
         }
     }
 
+    protected static void notifyRobotDeath(robocode.RobotDeathEvent event)
+    {
+        for (RumbleBot bot : _team)
+        {
+            bot.onTeamRobotDeath(event);
+        }
+    }
+
     public static void log(String message)
     {
         /*synchronized (_out)

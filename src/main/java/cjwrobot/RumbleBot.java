@@ -103,6 +103,16 @@ public abstract class RumbleBot extends TeamRobot
         stinger.roundOver();
     }
 
+    public void onRobotDeath(robocode.RobotDeathEvent event)
+    {
+        TeamUtils.notifyRobotDeath(event);
+    }
+
+    public void onTeamRobotDeath(robocode.RobotDeathEvent event)
+    {
+        stinger.onTeamRobotDeath(event);
+    }
+
     public void onSkippedTurn(SkippedTurnEvent e) 
     {
         System.out.println("skipped turn! time = " + getTime());
