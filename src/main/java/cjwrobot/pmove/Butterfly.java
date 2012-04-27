@@ -1,12 +1,13 @@
-package com.linkedin.cjwrobot.pmove;
-import com.linkedin.cjwrobot.utils.*;
-import com.linkedin.cjwrobot.RumbleBot;
+package cjwrobot.pmove;
+import cjwrobot.RumbleBot;
+import cjwrobot.utils.PUtils;
+import cjwrobot.utils.Wave;
 import robocode.*;
 import java.util.*;
 import java.awt.geom.*;
 
-//Butterfly, a movement by PEZ. For CassiusClay - Float like a butterfly!
-//http://robowiki.net/?CassiusClay
+//Butterfly, a movement by PEZ. For Hydra - Float like a butterfly!
+//http://robowiki.net/?Hydra
 
 //This code is released under the RoboWiki Public Code Licence (RWPCL), datailed on:
 //http://robowiki.net/?RWPCL
@@ -459,7 +460,7 @@ class MovementWave extends Wave {
 
 	static void registerHit(Bullet bullet) {
 		Point2D bulletLocation = new Point2D.Double(bullet.getX(), bullet.getY());
-		MovementWave wave = (MovementWave)Wave.findClosest(bullets, bulletLocation, bullet.getVelocity());
+		MovementWave wave = (MovementWave) Wave.findClosest(bullets, bulletLocation, bullet.getVelocity());
 		if (wave != null) {
 			wave.registerHit(bullet.getHeadingRadians());
 		}

@@ -1,4 +1,4 @@
-package src.java.com.linkedin.cjwrobot.utils;
+package cjwrobot;
 
 import robocode.Robot;
 import robocode.ScannedRobotEvent;

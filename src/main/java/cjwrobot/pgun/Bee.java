@@ -1,6 +1,8 @@
-package com.linkedin.cjwrobot.pgun;
+package cjwrobot.pgun;
 
-import com.linkedin.cjwrobot.utils.*;
+import cjwrobot.utils.PUtils;
+import cjwrobot.utils.RobotPredictor;
+import cjwrobot.utils.Wave;
 import robocode.*;
 import robocode.util.Utils;
 import java.io.*;
@@ -8,8 +10,8 @@ import java.util.*;
 import java.util.zip.*;
 import java.awt.geom.*;
 
-//Bee, a gun by PEZ. For CassiusClay - Sting like a bee!
-//http://robowiki.net/?CassiusClay
+//Bee, a gun by PEZ. For Hydra - Sting like a bee!
+//http://robowiki.net/?Hydra
 
 //This code is released under the RoboWiki Public Code Licence (RWPCL), datailed on:
 //http://robowiki.net/?RWPCL
@@ -126,7 +128,7 @@ public class Bee extends Stinger {
 
 	void bulletHit(BulletHitEvent e) {
 		Bullet b = e.getBullet();
-		BeeWave wave = (BeeWave)Wave.findClosest(BeeWave.bullets, new Point2D.Double(b.getX(), b.getY()), b.getVelocity());
+		BeeWave wave = (BeeWave) Wave.findClosest(BeeWave.bullets, new Point2D.Double(b.getX(), b.getY()), b.getVelocity());
 		if (wave != null) {
 			wave.currentGuessor().registerHit(b.getPower(), distance);
 			BeeWave.BeeReplacor.registerHit(wave);

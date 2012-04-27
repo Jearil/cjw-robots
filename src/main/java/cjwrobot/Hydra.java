@@ -1,20 +1,18 @@
-package com.linkedin.cjwrobot;
+package cjwrobot;
 
 import java.awt.Color;
 
-import com.linkedin.cjwrobot.pgun.Bee;
-import com.linkedin.cjwrobot.pmove.Butterfly;
-
-//CassiusClay - by PEZ - Float like a butterfly. Sting like a bee.
-//http://robowiki.net/?CassiusClay
+import cjwrobot.pgun.Bee;
+import cjwrobot.pmove.Butterfly;
 
 //This code is released under the RoboWiki Public Code Licence (RWPCL), datailed on:
 //http://robowiki.net/?RWPCL
 //(Basically it means you must keep the code public if you base any bot on it.)
 
-//$Id: CassiusClay.java,v 1.9 2007-02-27 05:49:05 peters Exp $
+//$Id: Hydra.java,v 1.9 2007-02-27 05:49:05 peters Exp $
 
-public class CassiusClay extends RumbleBot {
+public class Hydra extends RumbleBot
+{
 	public void run() {
 		floater = new Butterfly(this);
 		stinger = new Bee(this, robotPredictor);

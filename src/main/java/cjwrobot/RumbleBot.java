@@ -1,13 +1,14 @@
-package com.linkedin.cjwrobot;
+package cjwrobot;
 
-import com.linkedin.cjwrobot.pgun.*;
-import com.linkedin.cjwrobot.pmove.*;
-import com.linkedin.cjwrobot.utils.*;
+import cjwrobot.pgun.*;
+import cjwrobot.pmove.*;
+import cjwrobot.utils.PUtils;
+import cjwrobot.utils.RobotPredictor;
 import robocode.*;
 import robocode.util.Utils;
 
-//CassiusClay - by PEZ - Float like a butterfly. Sting like a bee.
-//http://robowiki.net/?CassiusClay
+//Hydra - by PEZ - Float like a butterfly. Sting like a bee.
+//http://robowiki.net/?Hydra
 
 //This code is released under the RoboWiki Public Code Licence (RWPCL), datailed on:
 //http://robowiki.net/?RWPCL

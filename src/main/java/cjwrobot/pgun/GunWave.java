@@ -1,8 +1,9 @@
-package com.linkedin.cjwrobot.pgun;
+package cjwrobot.pgun;
 
-import com.linkedin.cjwrobot.utils.Wave;
+import cjwrobot.utils.Wave;
 
-public class GunWave extends Wave {
+public class GunWave extends Wave
+{
 	boolean hit(double diff) {
 		return Math.abs(diff) < ((double)this.botWidth() / 1.5);
 	}

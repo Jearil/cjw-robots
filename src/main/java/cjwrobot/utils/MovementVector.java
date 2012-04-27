@@ -1,4 +1,4 @@
-package com.linkedin.cjwrobot.utils;
+package cjwrobot.utils;
 
 // MovementVector, utility class for use with RobotPredictor. By PEZ.
 // http://robowiki.net/?PEZ

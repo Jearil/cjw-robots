@@ -1,4 +1,4 @@
-package com.linkedin.cjwrobot.utils;
+package cjwrobot.utils;
 import robocode.*;
 import java.awt.geom.*;
 

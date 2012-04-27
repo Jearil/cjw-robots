@@ -1,6 +1,20 @@
 apply plugin: 'java'
 
+task copyBuild(type: Copy) << {
+    outputs.upToDateWhen{ false }
+    from 'build/classes/main/cjwrobot'
+    into 'robocode/robots/cjwrobot'
+    include '**/*.class'
+    include '*.class'
+    println('WTF')
+}
+
 dependencies {
     compile fileTree(dir: 'robocode/libs', include: '*.jar')
 }
 
+Copy sampleCopy = task(sampleCopy, type:Copy)
+sampleCopy.from 'build/classes/main/cjwrobot'
+sampleCopy.into 'robocode/robots/cjwrobot'
+sampleCopy.include('**/*.class', '*.class')
+sampleCopy

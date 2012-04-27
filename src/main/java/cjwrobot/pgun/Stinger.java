@@ -1,13 +1,14 @@
-package com.linkedin.cjwrobot.pgun;
+package cjwrobot.pgun;
 
-import com.linkedin.cjwrobot.RumbleBot;
-import com.linkedin.cjwrobot.utils.*;
+import cjwrobot.RumbleBot;
+import cjwrobot.utils.PUtils;
+import cjwrobot.utils.RobotPredictor;
 import robocode.*;
 
 import java.awt.geom.*;
 
-//Bee, a gun by PEZ. For CassiusClay - Sting like a bee!
-//http://robowiki.net/?CassiusClay
+//Bee, a gun by PEZ. For Hydra - Sting like a bee!
+//http://robowiki.net/?Hydra
 
 //This code is released under the RoboWiki Public Code Licence (RWPCL), datailed on:
 //http://robowiki.net/?RWPCL
