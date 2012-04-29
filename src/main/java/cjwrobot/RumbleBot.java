@@ -118,6 +118,11 @@ public abstract class RumbleBot extends TeamRobot
         stinger.onTeamRobotDeath(event);
     }
 
+    protected void onTeamBulletFired(AdvancedRobot shooter)
+    {
+        floater.onTeamFiredBullet(shooter);
+    }
+
     public void onSkippedTurn(SkippedTurnEvent e) 
     {
         System.out.println("skipped turn! time = " + getTime());

@@ -96,11 +96,16 @@ public class Bee extends Stinger {
 
 		double guessedBearing = nextBearing + orbitDirection * (wave.mostVisited() - BeeWave.MIDDLE_BIN);
 		robot.setTurnGunRightRadians(Utils.normalRelativeAngle(guessedBearing - robot.getGunHeadingRadians()));
-		if (isTC || (robot.getEnergy() >= 0.3 || e.getEnergy() < robot.getEnergy() / 5 || distance < 120)) {
-			if (Math.abs(robot.getGunTurnRemainingRadians()) < PUtils.botWidthAngle(distance) / 2 && robot.setFireBullet(bulletPower) != null && lastWave != null) {
-					lastWave.weight = 5;
-					BeeWave.bullets.add(lastWave);
-					lastWave.currentGuessor().registerFire();
+		if (isTC || (robot.getEnergy() >= 0.3 || e.getEnergy() < robot.getEnergy() / 5 || distance < 120))
+        {
+			if (Math.abs(robot.getGunTurnRemainingRadians()) < PUtils.botWidthAngle(distance) / 2 &&
+                    robot.setFireBullet(bulletPower) != null &&
+                    lastWave != null)
+            {
+				lastWave.weight = 5;
+				BeeWave.bullets.add(lastWave);
+				lastWave.currentGuessor().registerFire();
+                TeamUtils.notifyBulletFired(robot);
 			}
 		}
 		lastVelocity = e.getVelocity();

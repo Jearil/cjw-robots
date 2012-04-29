@@ -66,6 +66,14 @@ public class Butterfly {
 		bulletsThisRound = 0;
 	}
 
+    public void onTeamFiredBullet(AdvancedRobot bot)
+    {
+        MovementWave wave = new MovementWave(bot, this);
+        wave.setGunLocation(new Point2D.Double(bot.getX(), bot.getY()));
+        wave.setStartBearing(bot.getGunHeading());
+        MovementWave.waves.add(wave);
+    }
+
 	public void onScannedRobot(ScannedRobotEvent e) {
 		time = robot.getTime();
 		if (RumbleBot.enemyIsRammer()) {

@@ -1,5 +1,6 @@
 package cjwrobot;
 
+import robocode.AdvancedRobot;
 import robocode.BulletHitEvent;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
@@ -66,6 +67,18 @@ public class TeamUtils
         for (RumbleBot bot : _team)
         {
             bot.onTeamRobotDeath(event);
+        }
+    }
+
+    public static void notifyBulletFired(AdvancedRobot shooter)
+    {
+        for (RumbleBot bot : _team)
+        {
+            if (bot == shooter)
+            {
+                continue;
+            }
+            bot.onTeamBulletFired(shooter);
         }
     }
 
