@@ -1,10 +1,10 @@
 #Battle Properties
-#Tue Apr 24 01:01:59 PDT 2012
+#Mon May 07 13:27:30 PDT 2012
 robocode.battle.numRounds=1
 robocode.battle.initialPositions=(80,80,45),(180,80,45),(80,180,45),(920,920,225),(820,920,225),(920,820,225)
-robocode.battle.gunCoolingRate=0.2
 robocode.battleField.width=1000
-robocode.battle.selectedRobots=sampleteam.MyFirstTeam*,cjwrobot.CJWTeam
+robocode.battle.gunCoolingRate=0.2
 robocode.battle.rules.inactivityTime=450
+robocode.battle.selectedRobots=cjwrobot.CJWTeam*,sampleteam.MyFirstTeam
 robocode.battle.hideEnemyNames=false
 robocode.battleField.height=1000

@@ -1,9 +1,6 @@
 package cjwrobot;
 
-import robocode.AdvancedRobot;
-import robocode.BulletHitEvent;
-import robocode.Robot;
-import robocode.ScannedRobotEvent;
+import robocode.*;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -70,7 +67,7 @@ public class TeamUtils
         }
     }
 
-    public static void notifyBulletFired(AdvancedRobot shooter)
+    public static void notifyBulletFired(AdvancedRobot shooter, double velocity)
     {
         for (RumbleBot bot : _team)
         {
@@ -78,7 +75,24 @@ public class TeamUtils
             {
                 continue;
             }
-            bot.onTeamBulletFired(shooter);
+            bot.onTeamBulletFired(shooter, velocity);
+        }
+    }
+    public static void notifyHitByBullet(HitByBulletEvent e) {
+        for (RumbleBot bot : _team) {
+            bot.onTeamHitByBullet(e);
+        }
+    }
+
+    public static void notifyMovement(AdvancedRobot mover, double ahead, double turn, double maxVelocity)
+    {
+        for (RumbleBot bot : _team)
+        {
+            if (bot == mover)
+            {
+                continue;
+            }
+            bot.onTeamMovement(mover, ahead, turn, maxVelocity);
         }
     }
 
@@ -123,13 +137,16 @@ public class TeamUtils
         double pDist = Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)));
 
         return new ScannedRobotEvent(
-                event.getName(),
-                event.getEnergy(),
-                theta - perspective.getHeading(),s
-               ,
+                event.getName(),                    // name
+                event.getEnergy(),                  // energy
+                theta - perspective.getHeading(),   // bearing
+                pDist,                              // distance
+                event.getHeading(),                 // heading
+                event.getVelocity());               // velocity
 
-        )
 
 
     }
+
+
 }

@@ -1,6 +1,8 @@
 package cjwrobot.pmove;
 import cjwrobot.RumbleBot;
+import cjwrobot.TeamUtils;
 import cjwrobot.utils.PUtils;
+import cjwrobot.utils.TeamWave;
 import cjwrobot.utils.Wave;
 import robocode.*;
 import java.util.*;
@@ -50,6 +52,7 @@ public class Butterfly {
 
 	double roundsLeft;
 	AdvancedRobot robot;
+    Map<String, TeamWave> _teamWave = new HashMap();
 
 	public Butterfly(AdvancedRobot robot) {
 		this.robot = robot;
@@ -66,12 +69,29 @@ public class Butterfly {
 		bulletsThisRound = 0;
 	}
 
-    public void onTeamFiredBullet(AdvancedRobot bot)
+    public void onTeamFiredBullet(AdvancedRobot bot, double velocity)
     {
         MovementWave wave = new MovementWave(bot, this);
         wave.setGunLocation(new Point2D.Double(bot.getX(), bot.getY()));
         wave.setStartBearing(bot.getGunHeading());
+        wave.setBulletVelocity(velocity);
         MovementWave.waves.add(wave);
+    }
+
+    public void omTeamMovement(AdvancedRobot mover, double ahead, double turn, double velocity)
+    {
+        String name = mover.getName();
+        TeamWave mate = _teamWave.get(name);
+        if (mate == null)
+        {
+            mate = new TeamWave(mover);
+            _teamWave.put(name, mate);
+        }
+        mate.setAhead(ahead);
+        mate.setTurn(turn);
+        mate.setVelocity(velocity);
+        mate.setX(mover.getX());
+        mate.setY(mover.getY());
     }
 
 	public void onScannedRobot(ScannedRobotEvent e) {
@@ -179,6 +199,10 @@ public class Butterfly {
 		if (closest != null) {
 			updateDirectionStats(MovementWave.surfables, closest);
 		}
+        for (TeamWave mate : _teamWave.values())
+        {
+            updateDirectionStats(MovementWave.surfables, mate, closest);
+        }
 		Move forward = wallSmoothedDestination(robotLocation, orbitCenter, direction);
 		double forwardSmoothingDanger = forward.smoothingDanger();
 		lastForwardSmoothing = forward.normalizedSmoothing();
@@ -215,9 +239,15 @@ public class Butterfly {
 		}
 		double newHeading = PUtils.absoluteBearing(robotLocation, destination);
 		double oldHeading = robot.getHeadingRadians();
-		robot.setAhead(PUtils.backAsFrontDirection(newHeading, oldHeading) * 50);
-		robot.setTurnRightRadians(PUtils.backAsFrontTurn(newHeading, oldHeading));
+
+        double ahead = PUtils.backAsFrontDirection(newHeading, oldHeading) * 50;
+        double turn =  PUtils.backAsFrontTurn(newHeading, oldHeading);
+
+		robot.setAhead(ahead);
+		robot.setTurnRightRadians(turn);
 		robot.setMaxVelocity(wantedVelocity);
+
+        TeamUtils.notifyMovement(robot, ahead, turn, wantedVelocity);
 	}
 
 	static Move wallSmoothedDestination(Point2D location, Point2D orbitCenter, double direction) {
@@ -265,11 +295,25 @@ public class Butterfly {
 		MovementWave.dangerStop += impactDanger(_waves, move.location);
 	}
 
+    void updateDirectionStats(List _waves, TeamWave mate, MovementWave closest) {
+		Move move = waveImpactLocation(closest, mate, 1.0, MAX_VELOCITY);
+		MovementWave.dangerForward += impactDanger(_waves, move.location);
+		move = waveImpactLocation(closest, mate, -1.0, MAX_VELOCITY);
+		MovementWave.dangerReverse += impactDanger(_waves, move.location);
+		move = waveImpactLocation(closest, mate, 1.0, 0);
+		MovementWave.dangerStop += impactDanger(_waves, move.location);
+	}
+
+    final double collision_fear_factor = 100;
+
 	double impactDanger(List _waves, Point2D impact) {
 		double danger = 0;
 		for (int i = 0, n = _waves.size(); i < n; i++) {
 			danger += ((MovementWave)_waves.get(i)).danger(impact);
 		}
+        for (TeamWave tw: _teamWave.values()) {
+            danger += collision_fear_factor / impact.distance(tw.getX(), tw.getY());
+        }
 		return danger;
 	}
 
@@ -296,6 +340,32 @@ public class Butterfly {
 			smoothed = wallSmoothedDestination(impactLocation, orbitCenter, currentDirection * direction);
 			wantedHeading = PUtils.absoluteBearing(impactLocation, smoothed.location);
 		} while (closest.distanceFromTarget(impactLocation, time++) > 18);
+		return new Move(impactLocation, smoothed.smoothing, smoothed.wantedEvasion, smoothed.oldDistance, impactLocation.distance(enemyLocation));
+	}
+
+    Move waveImpactLocation(MovementWave closest, TeamWave mate, double direction, double maxVelocity) {
+		double currentDirection = robotOrbitDirection(mate.gunBearing(robotLocation));
+		double v = Math.abs(robot.getVelocity()) * PUtils.sign(direction);
+		double h = robot.getHeadingRadians();
+		Point2D orbitCenter = orbitCenter(closest);
+		Point2D impactLocation = new Point2D.Double(robot.getX(), robot.getY());
+		Move smoothed = wallSmoothedDestination(impactLocation, orbitCenter, currentDirection * direction);
+		double wantedHeading = PUtils.absoluteBearing(impactLocation, smoothed.location);
+		h += PUtils.backAsFrontDirection(wantedHeading, h) < 0 ? Math.PI : 0.0;
+		int time = 0;
+		do {
+			double maxTurn = Math.toRadians(MAX_TURN_RATE - 0.75 * Math.abs(v));
+			h += PUtils.minMax(PUtils.backAsFrontTurn(wantedHeading, h), -maxTurn, maxTurn);
+			if (v < maxVelocity) {
+				v = Math.min(maxVelocity, v + (v < 0 ? 2 : 1));
+			}
+			else {
+				v = Math.max(maxVelocity, v - 2);
+			}
+			impactLocation = PUtils.project(impactLocation, h, v);
+			smoothed = wallSmoothedDestination(impactLocation, orbitCenter, currentDirection * direction);
+			wantedHeading = PUtils.absoluteBearing(impactLocation, smoothed.location);
+		} while (mate.distanceFromTarget(impactLocation, time++) > 18);
 		return new Move(impactLocation, smoothed.smoothing, smoothed.wantedEvasion, smoothed.oldDistance, impactLocation.distance(enemyLocation));
 	}
 

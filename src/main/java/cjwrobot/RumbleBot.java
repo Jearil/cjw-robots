@@ -7,7 +7,7 @@ import cjwrobot.utils.RobotPredictor;
 import robocode.*;
 import robocode.util.Utils;
 
-//Hydra - by PEZ - Float like a butterfly. Sting like a bee.
+//Hydra - Originaly by PEZ, Modifed for team play by CJW - Float like a butterfly. Sting like a bee. Kill Hercules
 //http://robowiki.net/?Hydra
 
 //This code is released under the RoboWiki Public Code Licence (RWPCL), datailed on:
@@ -78,6 +78,11 @@ public abstract class RumbleBot extends TeamRobot
     public void onHitByBullet(HitByBulletEvent e) 
     {
         floater.onHitByBullet(e);
+        TeamUtils.notifyHitByBullet(e);
+    }
+
+    public void onTeamHitByBullet(HitByBulletEvent e) {
+        floater.onHitByBullet(e);
     }
 
     public void onBulletHit(BulletHitEvent e) 
@@ -118,9 +123,14 @@ public abstract class RumbleBot extends TeamRobot
         stinger.onTeamRobotDeath(event);
     }
 
-    protected void onTeamBulletFired(AdvancedRobot shooter)
+    protected void onTeamBulletFired(AdvancedRobot shooter, double velocity)
     {
-        floater.onTeamFiredBullet(shooter);
+        floater.onTeamFiredBullet(shooter, velocity);
+    }
+
+    protected void onTeamMovement(AdvancedRobot mover, double ahead, double turn, double maxVelocity)
+    {
+        floater.omTeamMovement(mover, ahead, turn, maxVelocity);
     }
 
     public void onSkippedTurn(SkippedTurnEvent e) 

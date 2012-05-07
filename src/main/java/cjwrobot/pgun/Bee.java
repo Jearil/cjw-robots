@@ -105,7 +105,8 @@ public class Bee extends Stinger {
 				lastWave.weight = 5;
 				BeeWave.bullets.add(lastWave);
 				lastWave.currentGuessor().registerFire();
-                TeamUtils.notifyBulletFired(robot);
+                double velocity = 20-(3*bulletPower);
+                TeamUtils.notifyBulletFired(robot, velocity);
 			}
 		}
 		lastVelocity = e.getVelocity();
@@ -150,6 +151,8 @@ public class Bee extends Stinger {
             TeamUtils.log("Robot(" + robot.getName() + ") has unset target enemy");
             enemyName = "";
         }
+        Bullet b = e.getBullet();
+
 	}
 
     void teamRobotDeath(robocode.RobotDeathEvent event) {
