@@ -123,6 +123,11 @@ public abstract class RumbleBot extends TeamRobot
         floater.onTeamFiredBullet(shooter);
     }
 
+    protected void onTeamMovement(AdvancedRobot mover, double ahead, double turn, double maxVelocity)
+    {
+        floater.omTeamMovement(mover, ahead, turn, maxVelocity);
+    }
+
     public void onSkippedTurn(SkippedTurnEvent e) 
     {
         System.out.println("skipped turn! time = " + getTime());

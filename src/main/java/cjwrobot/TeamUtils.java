@@ -82,6 +82,18 @@ public class TeamUtils
         }
     }
 
+    public static void notifyMovement(AdvancedRobot mover, double ahead, double turn, double maxVelocity)
+    {
+        for (RumbleBot bot : _team)
+        {
+            if (bot == mover)
+            {
+                continue;
+            }
+            bot.onTeamMovement(mover, ahead, turn, maxVelocity);
+        }
+    }
+
     public static void log(String message)
     {
         /*synchronized (_out)
