@@ -100,11 +100,36 @@ public class TeamUtils
     }
 
 
-    /*
-    public static ScannedRobotEvent fromPerspectiveOf(ScannedRobotEvent event, Robot source, Robot Perspective)
+
+    public static ScannedRobotEvent fromPerspectiveOf(ScannedRobotEvent event, Robot source, Robot perspective)
     {
         // compute scanned robot's absolute position
-        double x;
-        double y;
-    }*/
+        double sourceX = source.getX();
+        double sourceY = source.getY();
+        // I always did hate polar coordinates
+        double bearing = event.getBearing();
+        double sourceBearing = source.getHeading();
+        // Calculate enemy bearing
+        double enemyBearing = sourceBearing + bearing;
+        // Calculate position
+        double distance = event.getDistance();
+        double enemyX = sourceX + distance * Math.sin(Math.toRadians(enemyBearing));
+        double enemyY = sourceY + distance * Math.cos(Math.toRadians(enemyBearing));
+
+        double dx = enemyX - perspective.getX();
+        double dy = enemyY - perspective.getY();
+        // Calculate angle to target
+        double theta = Math.toDegrees(Math.atan2(dx, dy));
+        double pDist = Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)));
+
+        return new ScannedRobotEvent(
+                event.getName(),
+                event.getEnergy(),
+                theta - perspective.getHeading(),s
+               ,
+
+        )
+
+
+    }
 }
