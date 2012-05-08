@@ -133,6 +133,12 @@ public abstract class RumbleBot extends TeamRobot
         floater.omTeamMovement(mover, ahead, turn, maxVelocity);
     }
 
+    public void onRoundEnded(robocode.RoundEndedEvent event)
+    {
+        stinger.onRoundEnded(event);
+        floater.onRoundEnded(event);
+    }
+
     public void onSkippedTurn(SkippedTurnEvent e) 
     {
         System.out.println("skipped turn! time = " + getTime());

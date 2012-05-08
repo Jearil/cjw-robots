@@ -118,4 +118,9 @@ public abstract class Stinger {
     public void setEnemy(String botName) {
         enemyName = botName;
     }
+
+    public void onRoundEnded(robocode.RoundEndedEvent event)
+    {
+        setEnemy("");
+    }
 }

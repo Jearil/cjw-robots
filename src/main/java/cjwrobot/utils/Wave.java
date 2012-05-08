@@ -70,6 +70,10 @@ public abstract class Wave {
 	}
 
 	public double distanceFromTarget(Point2D location, int timeOffset) {
+        if (location == null)
+        {
+            return 0;
+        }
 		return gunLocation.distance(location) - distanceFromGun - (double)timeOffset * bulletVelocity;
 	}
 
@@ -161,6 +165,10 @@ public abstract class Wave {
 	}
 
 	public void setTargetLocation(Point2D targetLocation) {
+        if (targetLocation == null)
+        {
+            throw new RuntimeException("Should not set null targetLocation");
+        }
 		this.targetLocation = targetLocation;
 		this.startTargetLocation.setLocation(targetLocation);
 	}

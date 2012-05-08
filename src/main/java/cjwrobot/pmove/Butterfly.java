@@ -94,6 +94,12 @@ public class Butterfly {
         mate.setY(mover.getY());
     }
 
+    public void onRoundEnded(robocode.RoundEndedEvent event)
+    {
+        _teamWave.clear();
+        MovementWave.waves.clear();
+    }
+
 	public void onScannedRobot(ScannedRobotEvent e) {
 		time = robot.getTime();
 		if (RumbleBot.enemyIsRammer()) {

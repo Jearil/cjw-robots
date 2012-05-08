@@ -22,6 +22,10 @@ public final class PUtils {
     }
 
     public static double absoluteBearing(Point2D source, Point2D target) {
+    if (source == null || target == null)
+    {
+        return 0;
+    }
 	return Math.atan2(target.getX() - source.getX(), target.getY() - source.getY());
     }
 
